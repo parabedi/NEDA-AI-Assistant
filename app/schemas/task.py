@@ -4,7 +4,7 @@ from datetime import date,datetime
 from pydantic import BaseModel,ConfigDict, model_validator
 
 from app.schemas.enums import TaskType, Priority, RecurrenceType
-
+from app.models.task import TaskStatus
 
 class TaskCreate(BaseModel):
     title: str
@@ -14,6 +14,7 @@ class TaskCreate(BaseModel):
     start_date: date
     due_date: date
     recurrence_type: RecurrenceType
+    status: TaskStatus = TaskStatus.TODO
 
     @model_validator(mode="after")
     def validate_task(self):
@@ -44,7 +45,7 @@ class TaskUpdate(BaseModel):
     priority: Priority | None = None
     start_date: date | None = None
     due_date: date | None = None
-    recurrence_type: RecurrenceType | None = None
+    recurrence_type: RecurrenceType
 
 
 
@@ -56,11 +57,16 @@ class TaskResponse(BaseModel):
     description: str | None = None
     task_type: TaskType
     priority: Priority
-    completed: bool
+    status: str
     start_date: date
     due_date: date
     recurrence_type: RecurrenceType
     created_at: datetime
     updated_at: datetime
+    status: TaskStatus
 
 
+class TaskStatusUpdate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    status: TaskStatus
